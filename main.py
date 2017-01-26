@@ -29,8 +29,6 @@ class Pizza(object):
         self.slices = []
 
 
-
-
 class Slice(object):
 
     TOO_BIG = 2
@@ -55,7 +53,7 @@ class Slice(object):
     def ratio_t_m(self, pizza):
         return self.total_t(pizza) / self.size
 
-    def is_slice_valid(self, pizza):
+    def is_valid(self, pizza):
         H, L = pizza.H, pizza.L
 
         r1, c1, r2, c2 = self.r1, self.c1, self.r2, self.c2
