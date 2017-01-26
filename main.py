@@ -50,6 +50,9 @@ class Slice(object):
         return np.sum(pizza.pizza[min(self.r1,self.r2):max(self.r1,self.r2)+1, 
                                   min(self.c1,self.c2):max(self.c1,self.c2)+1])
 
+    def total_m(self, pizza):
+        return self.size - self.total_t(pizza)
+
     def ratio_t_m(self, pizza):
         return self.total_t(pizza) / self.size
 
