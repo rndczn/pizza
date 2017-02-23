@@ -10,73 +10,30 @@ FILE = 'sample'
 # FILE = 'videos_worth_spreading'
 FILENAME = 'data/' + FILE + '.in'
 
-#
-# CODE
-#
 def parse(filename):
     with open(filename) as f:
         V, E, R, C, X = map(int, f.readline().split())
-        endpoints = []
-        caches = []
+        gain = np.zeros((C, V), dtype=np.int)
+        ep_vid = np.zeros((E, V), dtype=np.int) 
+        cache_ep = np.zeros((C, E), dtype=np.int) 
+        caches = X * np.ones(C, dtype=np.int)
+        vids = np.array(list(map(int, f.readline().split())))
 
-        vids = list(map(int, f.readline().split()))
-
-        for _ in range(E):
+        for ep in range(E):
             Ld, K = list(map(int, f.readline().split()))
-            endpoint = EndPoint(Ld, K, R, C)
             for _ in range(K):
                 c, Lc = list(map(int, f.readline().split()))
-                endpoint.cache_servers_list[c] = Lc
-                endpoint.cache_servers.append(c)
-            endpoints.append(endpoint)
+                cache_ep[c,ep] = Ld - Lc
 
         for _ in range(R):
             Rv, Re, Rn = list(map(int, f.readline().split()))
-            endpoints[Re].requests[Rv] = Rn
+            ep_vid[Re,Rv] = Rn
 
+        gain = np.dot(cache_ep, ep_vid)
+        ep_vid[ep_vid != 0] = 1
+        cache_ep[cache_ep != 0] = 1
 
-    return V, E, R, C, X, vids, endpoints, requests
-
-
-class EndPoint(object):
-
-    def __init__(self, Ld, K, R, C):
-        self.Ld = Ld
-        self.K = K
-        self.cache_servers_list = [Ld] * C
-        self.cache_servers = []
-        self.requests = [0] * R
-
-    def __repr__(self):
-        return 'Ld:{Ld}/K:{K}/X:{X} => {cache_servers_list}'.format(**self.__dict__)
-
-
-class Cache(object):
-
-    def __init__(self, V):
-        self.endpoints = []
-        self.vids = [0] * V
-
-
-#
-# TESTS
-#
-class TestSelection(unittest.TestCase):
-
-    def test_sample(self):
-        """Example of test syntax."""
-        self.assertEqual(1, 1)
-        self.assertTrue(True)
-        self.assertFalse(False)
-        # be careful, None is considered false, prefer assertEqual to test
-        # if result is false
-        self.assertFalse(None)
-        with self.assertRaises(Exception):
-            raise Exception
-
-    def setUp(self):
-        """Define elements common to all tests."""
-        self.common = 10
+    return V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids
 
 
 #
@@ -84,13 +41,14 @@ class TestSelection(unittest.TestCase):
 #
 if __name__ == '__main__':
     # unittest.main()
-    V, E, R, C, X, vids, endpoints, requests = parse(FILENAME)
-    print()
+    V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids = parse(FILENAME)
     print('V', V)
     print('E', E)
     print('R', R)
     print('C', C)
     print('X', X)
-    print('vids', vids)
-    print('endpoints', endpoints)
-    print('requests', requests)
+    print('gain\n', gain)
+    print('ep_vid\n', ep_vid)
+    print('cache_ep\n', cache_ep)
+    print('caches\n', caches)
+    print('vids\n', vids)
