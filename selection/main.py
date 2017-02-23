@@ -6,6 +6,8 @@ from collections import defaultdict
 from datetime import datetime as dt
 
 import numpy as np
+from numpy import unravel_index
+from numpy.random import choice
 import pandas as pd
 
 FILE = 'sample'
@@ -58,8 +60,8 @@ def output(results, outfile='truc'):
 
 def choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i, mask):
 
-    from numpy import unravel_index
     cache, vid = unravel_index(gain.argmax(), gain.shape)
+    cache, vid = unravel_index(choice(ravel(gain).argsort()[-2:]), gain.shape)
     if gain[cache, vid] == 0:
         return
 
