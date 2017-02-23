@@ -33,7 +33,10 @@ def parse(file):
             Rv, Re, Rn = list(map(int, f.readline().split()))
             ep_vid[Re,Rv] = Rn
 
+        begin = time.time()
         gain = np.dot(cache_ep, ep_vid)
+        end = time.time()
+        print('dot took', end - begin)
 
         mask = np.ones((C,V), dtype=np.int)
         for c in range(C):
@@ -62,19 +65,19 @@ def choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i, mask):
     results[cache].append(vid)
     caches[cache] -= vids[vid]
 
-    for ep in [ep for ep in range(cache_ep.shape[1]) if cache_ep[cache, ep] > 0]:
-        ep_vid[ep,vid] = 0
+    eps = [ep for ep in range(cache_ep.shape[1]) if cache_ep[cache, ep] > 0]
+    for ep in eps:
+        linked_caches = [cach for cach in range(cache_ep.shape[0])
+                              if cache_ep[cach,ep] != 0 and cach != cache]
+        for cc in linked_caches:
+            gain[cc,vid] -= ep_vid[ep,vid] * cache_ep[cc,ep]
 
-    new_gain = np.dot(cache_ep, ep_vid)
-
-    mask[cache, vid] = 0
+    gain[cache, vid] = 0
     for i, v in enumerate(vids):
         if v > caches[cache]:
-            mask[cache, i] = 0
+            gain[cache, i] = 0
 
-    new_gain[mask == 0] = 0
-
-    return new_gain
+    return gain
 
 def run(gain, ep_vid, cache_ep, caches, vids, filename, mask):
     results = defaultdict(list)
