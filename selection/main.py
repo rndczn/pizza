@@ -95,6 +95,7 @@ if __name__ == '__main__':
     for file in ['sample', 'me_at_the_zoo', 'videos_worth_spreading',
                  'trending_today', 'kittens']:
         print('start ' + file)
+        V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids = parse(file)
         run(gain, ep_vid, cache_ep, caches, vids, FILE)
         print('end ' + file)
     end = time.time()
