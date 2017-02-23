@@ -14,6 +14,18 @@ def parse(filename):
         pass
 
 
+class Video(object):
+
+    def __init__(self, size, popu):
+        self.size = size
+        self.popu = popu
+
+
+class Server(object):
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+
 
 #
 # TESTS
