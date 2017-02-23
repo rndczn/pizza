@@ -1,5 +1,6 @@
 import time
 import unittest
+import sys
 
 from collections import defaultdict
 from datetime import datetime as dt
@@ -96,12 +97,12 @@ def run(gain, ep_vid, cache_ep, caches, vids, filename, mask):
 if __name__ == '__main__':
     # unittest.main()
 
+    file = sys.argv[1]
+
     begin = time.time()
-    for file in ['sample', 'me_at_the_zoo', 'videos_worth_spreading',
-                 'trending_today', 'kittens']:
-        print('start ' + file + ' ' + ' {:%Hh%Mm%S}'.format(dt.now()))
-        V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids, mask = parse(file)
-        run(gain, ep_vid, cache_ep, caches, vids, file, mask)
-        print('end ' + file)
+    print('start ' + file + ' ' + ' {:%Hh%Mm%S}'.format(dt.now()))
+    V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids, mask = parse(file)
+    run(gain, ep_vid, cache_ep, caches, vids, file, mask)
+    print('end ' + file)
     end = time.time()
     print(end - begin)
