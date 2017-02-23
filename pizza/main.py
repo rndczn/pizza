@@ -4,7 +4,11 @@ import random
 
 import numpy as np
 
-FILE = 'data/big.in'
+PB = 'example'
+PB = 'small'
+PB = 'medium'
+PB = 'big'
+FILE = 'data/' + PB + '.in'
 DIRECTIONS = ['LEFT', 'RIGHT', 'UP', 'DOWN']
 
 
@@ -223,7 +227,7 @@ if __name__ == '__main__':
     print('smaller  ', 'T' if pizza.smaller == pizza.T else 'M')
     print('nbsmaller', pizza.nb_smaller)
     print('pizza\n', pizza.tm)
-    # print('slice 0,0,2,4:', Slice(0, 0, 2, 4, pizza))
+    print('slice 0,0,2,4:', Slice(0, 0, 2, 4, pizza))
 
     # print()
     # print('#' * 10)
@@ -272,14 +276,14 @@ if __name__ == '__main__':
     from datetime import datetime as dt
     print(dt.now())
     pizza.initial_positions()
-    
+
     # print()
     # print('#' * 10)
     # print('INITIAL')
     # print('#' * 10)
     # print(pizza.mask)
     # print()
-    
+
     i = 0
     while pizza.grow_invalid():
         # print()
@@ -307,5 +311,9 @@ if __name__ == '__main__':
     # print('#' * 10)
     print(dt.now())
     print(pizza.score)
+    with open('out_' + PB + '.txt', 'w') as f:
+        f.write(str(len(pizza.slices)) + '\n')
+        for pizza_slice in pizza.slices:
+            f.write(pizza_slice.__repr__() + '\n')
     # print(pizza.slices)
     # print(pizza.mask)
