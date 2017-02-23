@@ -1,13 +1,14 @@
+import time
 import unittest
 
 import numpy as np
 import pandas as pd
 
 FILE = 'sample'
-# FILE = 'kittens'
 # FILE = 'me_at_the_zoo'
-# FILE = 'trending_today'
 # FILE = 'videos_worth_spreading'
+# FILE = 'trending_today'
+# FILE = 'kittens'
 FILENAME = 'data/' + FILE + '.in'
 
 def parse(filename):
@@ -30,10 +31,28 @@ def parse(filename):
             ep_vid[Re,Rv] = Rn
 
         gain = np.dot(cache_ep, ep_vid)
-        ep_vid[ep_vid != 0] = 1
-        cache_ep[cache_ep != 0] = 1
 
     return V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids
+
+
+def output(results, outfile='truc')
+    outfile += '.out'
+    with open(outfile, 'w') as f:
+        f.write(str(len(results)) + '\n')
+        for k, vids in results.items():
+            f.write(str(k) + ' ' + ' '.join(str(v) for v in vids) + '\n')
+
+
+def choose_vid(gain, ep_vid, cache_ep, caches, vids):
+
+    # find corresponding cache video
+    cache, vid = np.argmax(gain)
+    results[cache].append(vid)
+
+    
+
+
+
 
 
 #
@@ -41,14 +60,18 @@ def parse(filename):
 #
 if __name__ == '__main__':
     # unittest.main()
+
+    begin = time.time()
     V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids = parse(FILENAME)
-    print('V', V)
-    print('E', E)
-    print('R', R)
-    print('C', C)
-    print('X', X)
-    print('gain\n', gain)
-    print('ep_vid\n', ep_vid)
-    print('cache_ep\n', cache_ep)
-    print('caches\n', caches)
-    print('vids\n', vids)
+    end = time.time()
+    print(end - begin)
+    # print('V', V)
+    # print('E', E)
+    # print('R', R)
+    # print('C', C)
+    # print('X', X)
+    # print('gain\n', gain)
+    # print('ep_vid\n', ep_vid)
+    # print('cache_ep\n', cache_ep)
+    # print('caches\n', caches)
+    # print('vids\n', vids)
