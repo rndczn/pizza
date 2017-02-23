@@ -2,6 +2,7 @@ import time
 import unittest
 
 from collections import defaultdict
+from datetime import datetime as dt
 
 import numpy as np
 import pandas as pd
@@ -34,12 +35,13 @@ def parse(file):
 
         gain = np.dot(cache_ep, ep_vid)
 
+        mask = np.ones((C,V), dtype=np.int)
         for c in range(C):
             for v in range(V):
                 if vids[v] > caches[c]:
-                    gain[c,v] = 0
+                    mask[c,v] = 0
 
-    return V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids
+    return V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids, mask
 
 
 def output(results, outfile='truc'):
@@ -50,7 +52,7 @@ def output(results, outfile='truc'):
             f.write(str(k) + ' ' + ' '.join(str(v) for v in vids) + '\n')
 
 
-def choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i):
+def choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i, mask):
 
     from numpy import unravel_index
     cache, vid = unravel_index(gain.argmax(), gain.shape)
@@ -65,24 +67,24 @@ def choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i):
 
     new_gain = np.dot(cache_ep, ep_vid)
 
-    new_gain[cache, vid] = 0
-    for c in range(C):
-        for v in range(V):
-            if c in results.keys():
-                if v in results[c]:
-                    new_gain[c,v] = 0
-            if vids[v] > caches[c]:
-                new_gain[c,v] = 0
+    mask[cache, vid] = 0
+    for i, v in enumerate(vids):
+        if v > caches[cache]:
+            mask[cache, i] = 0
+
+    new_gain[mask == 0] = 0
 
     return new_gain
 
-def run(gain, ep_vid, cache_ep, caches, vids, filename):
+def run(gain, ep_vid, cache_ep, caches, vids, filename, mask):
     results = defaultdict(list)
     i = 0
-    new_gain = choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i)
+    new_gain = choose_vid(gain, ep_vid, cache_ep, caches, vids, results, i, mask)
     while new_gain is not None:
         i += 1
-        new_gain = choose_vid(new_gain, ep_vid, cache_ep, caches, vids, results, i)
+        if i % 100 == 0:
+            output(results, filename)
+        new_gain = choose_vid(new_gain, ep_vid, cache_ep, caches, vids, results, i, mask)
     output(results, filename)
 
 #
@@ -94,9 +96,9 @@ if __name__ == '__main__':
     begin = time.time()
     for file in ['sample', 'me_at_the_zoo', 'videos_worth_spreading',
                  'trending_today', 'kittens']:
-        print('start ' + file)
-        V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids = parse(file)
-        run(gain, ep_vid, cache_ep, caches, vids, FILE)
+        print('start ' + file + ' ' + ' {:%Hh%Mm%S}'.format(dt.now()))
+        V, E, R, C, X, gain, ep_vid, cache_ep, caches, vids, mask = parse(file)
+        run(gain, ep_vid, cache_ep, caches, vids, file, mask)
         print('end ' + file)
     end = time.time()
     print(end - begin)
